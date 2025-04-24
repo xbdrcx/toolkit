@@ -16,17 +16,17 @@ function App() {
         <nav>
           <h1>Hello, Toolkit.</h1>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link to="/">Home</Link>
-            <Link to="/json">JSON Formatter</Link>
-            <Link to="/color">Color Picker</Link>
-            <Link to="/password">Password Generator</Link>
+            <Link to="/toolkit">Home</Link>
+            <Link to="/toolkit/json">JSON Formatter</Link>
+            <Link to="/toolkit/color">Color Picker</Link>
+            <Link to="/toolkit/password">Password Generator</Link>
           </div>
         </nav>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/json" element={<JSONFormatter />} />
-          <Route path="/color" element={<ColorPicker />} />
-          <Route path="/password" element={<PasswordGenerator />} />
+          <Route path="/toolkit" element={<Home />} />
+          <Route path="/toolkit/json" element={<JSONFormatter />} />
+          <Route path="/toolkit/color" element={<ColorPicker />} />
+          <Route path="/toolkit/password" element={<PasswordGenerator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

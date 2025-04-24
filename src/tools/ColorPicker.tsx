@@ -1,4 +1,29 @@
+// Icons
+import { TbColorPicker } from "react-icons/tb";
+
+interface EyeDropperResult {
+    sRGBHex: string;
+} 
+interface EyeDropper {
+  open(): Promise<EyeDropperResult>;
+}
+interface Window {
+  EyeDropper?: new () => EyeDropper;
+}
+
 export default function ColorPicker() {
+
+    const handlePicker = async () => {
+        const EyeDropper = (window as any).EyeDropper;
+        if (EyeDropper) {
+          const eyeDropper = new EyeDropper();
+          const result = await eyeDropper.open();
+          console.log(result.sRGBHex);
+        } else {
+          alert("EyeDropper not supported");
+        }
+    };
+
     return (
         <>
             <h2>Color-Picker & Pallette Generator</h2>
@@ -23,6 +48,7 @@ export default function ColorPicker() {
                     <label htmlFor="cmyk">CMYK:</label>
                     <input type="text" id="cmyk" name="cmyk" defaultValue="0%, 0%, 0%, 100%" />
                 </div>
+                <button className="btn" onClick={handlePicker}><TbColorPicker /></button>
             </div>
         </>
     )
