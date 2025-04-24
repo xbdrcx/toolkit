@@ -3,7 +3,6 @@ export default function PasswordGenerator() {
         <>
             <h1>Password Generator</h1>
             <div className="passgenerator">
-                <p>Generate a random password</p>
                 <div className="password-options">
                     <label htmlFor="length">Length:</label>
                     <input type="number" id="length" min="1" max="128" defaultValue="12" />

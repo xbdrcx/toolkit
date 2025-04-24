@@ -5,10 +5,8 @@ import './App.css'
 // Tools
 import Home from './Home'
 import JSONFormatter from './tools/JSONFormatter'
-import CaseConverter from './tools/CaseConverter'
 import PasswordGenerator from './tools/PasswordGenerator'
 import ColorPicker from './tools/ColorPicker'
-import Base64Coder from './tools/Base64Coder'
 import NotFound from './NotFound'
 
 function App() {
