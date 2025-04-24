@@ -98,9 +98,9 @@ export default function JSONFormatter() {
                     disabled
                 ></textarea>
                 <div className='buttons'>
+                    <button className='btn' onClick={pasteFromClipboard}><MdContentPasteGo />Paste</button>
                     <button className='btn' onClick={formatJSON} disabled={!toFormatRef.current?.value?.length}><MdFormatAlignLeft /> Format</button>
                     <button className='btn' onClick={minifyJSON} disabled={!toFormatRef.current?.value?.length}><VscJson />Minify</button>
-                    <button className='btn' onClick={pasteFromClipboard}><MdContentPasteGo />Paste</button>
                     <button className='btn' onClick={copyToClipboard} disabled={!formattedRef.current?.value?.length}><MdCopyAll />Copy</button>
                     <button className='btn' onClick={downloadJSON} disabled={!formattedRef.current?.value?.length}><MdDownloading />Download</button>
                     <button className='btn' onClick={clearTextAreas}><MdClear />Clear</button>
