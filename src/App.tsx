@@ -1,5 +1,5 @@
 // General
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
 import './App.css'
 
 // Tools
@@ -11,31 +11,40 @@ import NotFound from './NotFound'
 
 function App() {
   return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const location = useLocation(); // Get the current route
+
+  return (
     <>
       {/* <video className='videobg' src='./toolkit/background_1.mp4' autoPlay muted /> */}
-      <Router>
+      {location.pathname !== '/toolkit' && ( // Conditionally render the nav
         <nav>
-          <h1>Hello, Toolkit.</h1>
+          <Link to="/toolkit" style={{ color: "white" }}><h1>Hello, Toolkit.</h1></Link>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link to="/toolkit">Home</Link>
             <Link to="/toolkit/json">JSON Formatter</Link>
             <Link to="/toolkit/color">Color Picker</Link>
             <Link to="/toolkit/password">Password Generator</Link>
           </div>
         </nav>
-        <Routes>
-          <Route path="/toolkit" element={<Home />} />
-          <Route path="/toolkit/json" element={<JSONFormatter />} />
-          <Route path="/toolkit/color" element={<ColorPicker />} />
-          <Route path="/toolkit/password" element={<PasswordGenerator />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+      )}
+      <Routes>
+        <Route path="/toolkit" element={<Home />} />
+        <Route path="/toolkit/json" element={<JSONFormatter />} />
+        <Route path="/toolkit/color" element={<ColorPicker />} />
+        <Route path="/toolkit/password" element={<PasswordGenerator />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
       <footer>
-          <a href='https://xbdrcx.github.io' target='_blank' className='bc'>BC</a>
+        <a href='https://xbdrcx.github.io' target='_blank' className='bc'>BC</a>
       </footer>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

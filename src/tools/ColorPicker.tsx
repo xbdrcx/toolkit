@@ -4,22 +4,15 @@ import { useState } from 'react';
 // Icons
 import { TbColorPicker } from "react-icons/tb";
 
-interface EyeDropperResult {
-    sRGBHex: string;
-} 
-interface EyeDropper {
-  open(): Promise<EyeDropperResult>;
-}
-interface Window {
-  EyeDropper?: new () => EyeDropper;
-}
-
 export default function ColorPicker() {
 
-    const [pickedColor, setPickedColor] = useState(null);
+    const [pickedColor, setPickedColor] = useState<string | null>(null);
 
     const handlePicker = async () => {
-        const EyeDropper = (window as any).EyeDropper;
+        interface EyeDropperConstructor {
+            new (): { open: () => Promise<{ sRGBHex: string }> };
+        }
+        const EyeDropper = (window as unknown as { EyeDropper: EyeDropperConstructor }).EyeDropper;
         if (EyeDropper) {
             const eyeDropper = new EyeDropper();
             const result = await eyeDropper.open();
@@ -42,7 +35,7 @@ export default function ColorPicker() {
         <>
             <h2>Color-Picker & Palette Generator</h2>
             <div className='colorpicker'>
-                <div className="colorpicker__show" style={{ backgroundColor: pickedColor }}></div>
+                <div className="colorpicker__show" style={{ backgroundColor: pickedColor || '' }}></div>
                 <div className='colorpicker__input'>
                     <label htmlFor="color">Color:</label>
                     <input type="color" id="color" name="color" defaultValue="#000000" />
@@ -61,7 +54,7 @@ export default function ColorPicker() {
                 </div>
                 <div className='colorpicker__output'>
                     <label htmlFor="cmyk">CMYK:</label>
-                    <input onClick={(e: any) => { copyToClipboard(e.target.value) }} type="text" id="cmyk" name="cmyk" defaultValue="0%, 0%, 0%, 100%" />
+                    <input onClick={(e: React.MouseEvent<HTMLInputElement>) => { copyToClipboard((e.target as HTMLInputElement).value) }} type="text" id="cmyk" name="cmyk" defaultValue="0%, 0%, 0%, 100%" />
                 </div>
                 <button className="btn" onClick={handlePicker}><TbColorPicker /></button>
             </div>
