@@ -29,6 +29,11 @@ export default function Home() {
                     description="Create favicons for your website." 
                     onClick={() => navigate('/toolkit/favicon')} // Navigate to Color Picker
                 />
+                <Card 
+                    title="Code Editor" 
+                    description="Write and edit code in a powerful editor." 
+                    onClick={() => navigate('/toolkit/editor')} // Navigate to Code Editor
+                />
             </div>
         </>
     )

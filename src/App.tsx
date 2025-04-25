@@ -8,6 +8,7 @@ import JSONFormatter from './tools/JSONFormatter'
 import PasswordGenerator from './tools/PasswordGenerator'
 import ColorPicker from './tools/ColorPicker'
 import FaviconGenerator from './tools/FaviconGenerator'
+import CodeEditor from './tools/CodeEditor'
 import NotFound from './NotFound'
 
 function App() {
@@ -32,6 +33,7 @@ function AppContent() {
             <Link to="/toolkit/color">Color Picker</Link>
             <Link to="/toolkit/password">Password Generator</Link>
             <Link to="/toolkit/favicon">Favicon Generator</Link>
+            <Link to="/toolkit/editor">Code Editor</Link>
           </div>
         </nav>
       )}
@@ -41,6 +43,7 @@ function AppContent() {
         <Route path="/toolkit/color" element={<ColorPicker />} />
         <Route path="/toolkit/password" element={<PasswordGenerator />} />
         <Route path="/toolkit/favicon" element={<FaviconGenerator />} />
+        <Route path="/toolkit/editor" element={<CodeEditor />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <footer>

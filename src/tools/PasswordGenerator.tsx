@@ -1,4 +1,12 @@
+// General
+import { useState } from 'react';
+
+// Components
+import CopyInput from '../components/CopyInput';
+
 export default function PasswordGenerator() {
+
+    const [newPassword, setNewPassword] = useState<string>("Password");
 
     const generatePassword = () => {
         const length = parseInt((document.getElementById("length") as HTMLInputElement).value) || 12;
@@ -21,7 +29,7 @@ export default function PasswordGenerator() {
             password += charSet.charAt(Math.floor(Math.random() * charSet.length));
         }
 
-        (document.querySelector(".password") as HTMLDivElement).innerText = password;
+        setNewPassword(password);
     }
 
     const copyToClipboard = () => {
@@ -49,6 +57,7 @@ export default function PasswordGenerator() {
                 </div>
                 <button className="btn" onClick={generatePassword}>Generate</button>
                 <div className="password" onClick={copyToClipboard}>Password</div>
+                <CopyInput value={newPassword} />
             </div>
         </>
     )
