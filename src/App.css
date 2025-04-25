@@ -152,6 +152,11 @@ footer {
   height: 128px;
   margin-bottom: 10px;
 }
+.colorpicker_color {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 .colorpalette {
   display: flex;

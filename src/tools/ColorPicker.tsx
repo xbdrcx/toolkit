@@ -42,6 +42,35 @@ export default function ColorPicker() {
         return '#' + Math.floor(Math.random() * 16777215).toString(16);
     };
 
+    // Convert color to the selected type
+    const convertColor = (color: string, type: string): string => {
+        const [r, g, b] = color.startsWith('#')
+            ? hexToRgb(color)
+            : color.replace(/[^\d,]/g, '').split(',').map(Number);
+
+        switch (type) {
+            case 'RGB':
+                return `rgb(${r}, ${g}, ${b})`;
+            case 'HEX':
+                return rgbToHex(r, g, b);
+            case 'HSL':
+                return rgbToHsl(r, g, b);
+            case 'CMYK':
+                return rgbToCmyk(r, g, b);
+            default:
+                return color;
+        }
+    };
+
+    // Update all colors when the color type changes
+    const handleColorTypeChange = (type: string) => {
+        setSelectedColorType(type);
+        if (pickedColor) {
+            setPickedColor(convertColor(pickedColor, type));
+        }
+        setColorPalette(colorPalette.map((color) => convertColor(color, type)));
+    };
+
     const handlePicker = async () => {
         interface EyeDropperConstructor {
             new (): { open: () => Promise<{ sRGBHex: string }> };
@@ -129,30 +158,84 @@ export default function ColorPicker() {
         }
     };
 
+    // Helper function to convert HEX to RGB
+    const hexToRgb = (hex: string): [number, number, number] => {
+        const bigint = parseInt(hex.slice(1), 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+    };
+
+    // Converts RGB to HEX
+    const rgbToHex = (r: number, g: number, b: number): string => {
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    };
+
+    // Converts RGB to HSL
+    const rgbToHsl = (r: number, g: number, b: number): string => {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h = 0,
+            s = 0,
+            l = (max + min) / 2;
+
+        if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r:
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                    break;
+                case g:
+                    h = (b - r) / d + 2;
+                    break;
+                case b:
+                    h = (r - g) / d + 4;
+                    break;
+            }
+            h /= 6;
+        }
+
+        return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+    };
+
+    // Converts RGB to CMYK
+    const rgbToCmyk = (r: number, g: number, b: number): string => {
+        const c = 1 - r / 255;
+        const m = 1 - g / 255;
+        const y = 1 - b / 255;
+        const k = Math.min(c, m, y);
+        return `cmyk(${Math.round((c - k) / (1 - k) * 100)}, ${Math.round((m - k) / (1 - k) * 100)}, ${Math.round((y - k) / (1 - k) * 100)}, ${Math.round(k * 100)})`;
+    };
+
     return (
         <>
             <div className='color_types'>
                 <button
                     className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`}
-                    onClick={() => setSelectedColorType('RGB')}
+                    onClick={() => handleColorTypeChange('RGB')}
                 >
                     RGB
                 </button>
                 <button
                     className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`}
-                    onClick={() => setSelectedColorType('HEX')}
+                    onClick={() => handleColorTypeChange('HEX')}
                 >
                     HEX
                 </button>
                 <button
                     className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`}
-                    onClick={() => setSelectedColorType('HSL')}
+                    onClick={() => handleColorTypeChange('HSL')}
                 >
                     HSL
                 </button>
                 <button
                     className={`btn ${selectedColorType === 'CMYK' ? 'btn-selected' : ''}`}
-                    onClick={() => setSelectedColorType('CMYK')}
+                    onClick={() => handleColorTypeChange('CMYK')}
                 >
                     CMYK
                 </button>
@@ -163,22 +246,7 @@ export default function ColorPicker() {
                     <div className="colorpicker_show" style={{ backgroundColor: pickedColor || '' }}></div>
                     <HuePicker width='100%' color={pickedColor || "#000000"} onChange={handleHueChange} />
                     <AlphaPicker width='100%' onChange={handleAlphaChange} />
-                    <div className='colorpicker__output'>
-                        <label htmlFor="hex">Hex:</label>
-                        <CopyInput value={pickedColor || '#000000'} />
-                    </div>
-                    <div className='colorpicker__output'>
-                        <label htmlFor="rgb">RGB:</label>
-                        <CopyInput value={pickedColor || '#000000'} />
-                    </div>
-                    <div className='colorpicker__output'>
-                        <label htmlFor="hsl">HSL:</label>
-                        <CopyInput value={pickedColor || '#000000'} />
-                    </div>
-                    <div className='colorpicker__output'>
-                        <label htmlFor="cmyk">CMYK:</label>
-                        <CopyInput value={pickedColor || '#000000'} />
-                    </div>
+                    <CopyInput value={pickedColor || '#000000'} />
                     <div className='colorpicker_buttons'>
                         <button className="btn" title='Picker' onClick={handlePicker}><TbColorPicker /> Picker</button>    
                         <button className="btn" title='Random' onClick={handleRandomColor}><FaDice /> Random</button>
@@ -199,7 +267,7 @@ export default function ColorPicker() {
                             <SortableContext items={colorPalette}>
                                 <div className='colorpalette_show'>
                                     {colorPalette.length === 0 ? (
-                                        <p className='colorpalette__empty'>Your palette is empty. Add some colors!</p>
+                                        <p className='colorpalette__empty'>Palette is empty. Add some colors!</p>
                                     ) : (
                                         colorPalette.map((color, index) => (
                                             <SortableItem
