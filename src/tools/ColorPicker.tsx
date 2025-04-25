@@ -55,8 +55,6 @@ export default function ColorPicker() {
                 return rgbToHex(r, g, b);
             case 'HSL':
                 return rgbToHsl(r, g, b);
-            case 'CMYK':
-                return rgbToCmyk(r, g, b);
             default:
                 return color;
         }
@@ -203,15 +201,6 @@ export default function ColorPicker() {
         return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
     };
 
-    // Converts RGB to CMYK
-    const rgbToCmyk = (r: number, g: number, b: number): string => {
-        const c = 1 - r / 255;
-        const m = 1 - g / 255;
-        const y = 1 - b / 255;
-        const k = Math.min(c, m, y);
-        return `cmyk(${Math.round((c - k) / (1 - k) * 100)}, ${Math.round((m - k) / (1 - k) * 100)}, ${Math.round((y - k) / (1 - k) * 100)}, ${Math.round(k * 100)})`;
-    };
-
     return (
         <>
             <div className='color_types'>
@@ -232,12 +221,6 @@ export default function ColorPicker() {
                     onClick={() => handleColorTypeChange('HSL')}
                 >
                     HSL
-                </button>
-                <button
-                    className={`btn ${selectedColorType === 'CMYK' ? 'btn-selected' : ''}`}
-                    onClick={() => handleColorTypeChange('CMYK')}
-                >
-                    CMYK
                 </button>
             </div>
             <div className='colorsection'>
