@@ -74,3 +74,10 @@ footer {
   color: white;
   opacity: .4;
 }
+
+.colorpicker__show {
+  border: 2px solid white;
+  border-radius: 8px;
+  height: 128px;
+  margin-bottom: 10px;
+}
