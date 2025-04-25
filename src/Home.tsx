@@ -24,6 +24,11 @@ export default function Home() {
                     description="Pick and generate color palettes." 
                     onClick={() => navigate('/toolkit/color')} // Navigate to Color Picker
                 />
+                <Card 
+                    title="Favicon Generator" 
+                    description="Create favicons for your website." 
+                    onClick={() => navigate('/toolkit/favicon')} // Navigate to Color Picker
+                />
             </div>
         </>
     )

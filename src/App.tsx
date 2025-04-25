@@ -2,11 +2,12 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
 import './App.css'
 
-// Tools
+// Pages & Tools
 import Home from './Home'
 import JSONFormatter from './tools/JSONFormatter'
 import PasswordGenerator from './tools/PasswordGenerator'
 import ColorPicker from './tools/ColorPicker'
+import FaviconGenerator from './tools/FaviconGenerator'
 import NotFound from './NotFound'
 
 function App() {
@@ -30,6 +31,7 @@ function AppContent() {
             <Link to="/toolkit/json">JSON Formatter</Link>
             <Link to="/toolkit/color">Color Picker</Link>
             <Link to="/toolkit/password">Password Generator</Link>
+            <Link to="/toolkit/favicon">Favicon Generator</Link>
           </div>
         </nav>
       )}
@@ -38,6 +40,7 @@ function AppContent() {
         <Route path="/toolkit/json" element={<JSONFormatter />} />
         <Route path="/toolkit/color" element={<ColorPicker />} />
         <Route path="/toolkit/password" element={<PasswordGenerator />} />
+        <Route path="/toolkit/favicon" element={<FaviconGenerator />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <footer>
