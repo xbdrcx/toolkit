@@ -1,6 +1,8 @@
 // General
 import { useState, useEffect } from 'react';
 import { HuePicker, AlphaPicker } from 'react-color';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 // @ts-ignore
 import ColorThief from 'colorthief';
 import { CSS } from '@dnd-kit/utilities';
@@ -267,27 +269,29 @@ export default function ColorPicker() {
 
     return (
         <>
-            <div className='colorsection'>
-                <div className='colorpicker' style={{ width: '80%' }}>
-                    <div className='color_types'>
-                        <h2>Color Picker</h2>
-                        <button className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HEX')}>HEX</button>
-                        <button className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('RGB')}>RGB</button>
-                        <button className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HSL')}>HSL</button>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                    <div className='colorpicker'>
+                        <div className='color_types'>
+                            <h2>Color Picker</h2>
+                            <button className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HEX')}>HEX</button>
+                            <button className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('RGB')}>RGB</button>
+                            <button className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HSL')}>HSL</button>
+                        </div>
+                        <div className="colorpicker_show" style={{ backgroundColor: pickedColor || '' }}></div>
+                        <HuePicker width='100%' color={pickedColor || "#000000"} onChange={handleHueChange} />
+                        <AlphaPicker width='100%' color={pickedColor || "#000000"} onChange={handleAlphaChange} />
+                        <CopyInput value={pickedColor || '#000000'} />
+                        <div className='colorpicker_buttons'>
+                            <Button variant="contained" color="primary" onClick={handlePicker}><TbColorPicker /> Picker</Button>
+                            <Button variant='contained' color="primary" onClick={() => setPickedColor(generateRandomColor())}><FaDice /> Random</Button>
+                            <Button variant='contained' color="primary" onClick={handlePreviousColor}><FaBackspace /> Previous</Button>
+                            <Button variant='contained' color='primary' title='Upload Image' onClick={() => document.getElementById('file-upload')?.click()}><FaImage /> Upload Image</Button>
+                            <input type="file" id="file-upload" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                        </div>
                     </div>
-                    <div className="colorpicker_show" style={{ backgroundColor: pickedColor || '' }}></div>
-                    <HuePicker width='100%' color={pickedColor || "#000000"} onChange={handleHueChange} />
-                    <AlphaPicker width='100%' color={pickedColor || "#000000"} onChange={handleAlphaChange} />
-                    <CopyInput value={pickedColor || '#000000'} />
-                    <div className='colorpicker_buttons'>
-                        <button className="btn" title='Picker' onClick={handlePicker}><TbColorPicker /> Picker</button>    
-                        <button className="btn" title='Random' onClick={handleRandomColor}><FaDice /> Random</button>
-                        <button className='btn' title="Previous" disabled={previsousColors.length == 0 ? true : false} onClick={handlePreviousColor}><FaBackspace /> Previous</button>
-                        <button className="btn" title='Upload Image' onClick={() => document.getElementById('file-upload')?.click()}><FaImage  /> Upload Image</button>
-                        <input type="file" id="file-upload" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
-                    </div>
-                </div>
-                <div style={{ width: '50%' }}>
+                </Grid>
+                <Grid item xs={12} md={3}>
                     <div className='colorpalette'>
                         <h2>Color Palette</h2>
                         <DndContext
@@ -313,10 +317,12 @@ export default function ColorPicker() {
                             </SortableContext>
                         </DndContext>
                         <div className='colorpalette_buttons'>
-                        <button className="btn" title="Add to Palette" onClick={addToPalette}><FaPalette /> Add to Palette</button>
-                            <button className="btn" title='Clear Palette' onClick={() => setColorPalette([])}><CgTrashEmpty /> Clear Palette</button>
+                            <Button variant='contained' color='primary' onClick={addToPalette}><FaPalette /> Add to Palette</Button>
+                            <Button variant='contained' color='primary' onClick={() => setColorPalette([])}><CgTrashEmpty /> Clear Palette</Button>
                         </div>
                     </div>
+                </Grid>
+                <Grid item xs={12} md={3}>
                     <div className='colorgradient'>
                         <h2>Color Gradient</h2>
                         <div
@@ -332,8 +338,8 @@ export default function ColorPicker() {
                             <CopyInput value={`linear-gradient(to right, ${colorPalette.join(', ')})`} />
                         </div>
                     </div>
-                </div>
-            </div>
+                </Grid>
+            </Grid>
         </>
     )
 }
