@@ -4,10 +4,10 @@ import './App.css'
 
 // Pages & Tools
 import Home from './Home'
-import JSONFormatter from './tools/JSONFormatter'
+import CodeMinifier from './tools/CodeMinifier'
 import PasswordGenerator from './tools/PasswordGenerator'
 import ColorPicker from './tools/ColorPicker'
-import FaviconGenerator from './tools/FaviconGenerator'
+import IconGenerator from './tools/IconGenerator'
 import CodeEditor from './tools/CodeEditor'
 import NotFound from './NotFound'
 
@@ -29,20 +29,20 @@ function AppContent() {
         <nav>
           <Link to="/toolkit" style={{ color: "white" }}><h1>Hello, Toolkit.</h1></Link>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link to="/toolkit/json">JSON Formatter</Link>
+            <Link to="/toolkit/minifier">Code Minifier</Link>
             <Link to="/toolkit/color">Color Picker</Link>
             <Link to="/toolkit/password">Password Generator</Link>
-            <Link to="/toolkit/favicon">Favicon Generator</Link>
+            <Link to="/toolkit/icon">Icon Generator</Link>
             <Link to="/toolkit/editor">Code Editor</Link>
           </div>
         </nav>
       )}
       <Routes>
         <Route path="/toolkit" element={<Home />} />
-        <Route path="/toolkit/json" element={<JSONFormatter />} />
+        <Route path="/toolkit/minifier" element={<CodeMinifier />} />
         <Route path="/toolkit/color" element={<ColorPicker />} />
         <Route path="/toolkit/password" element={<PasswordGenerator />} />
-        <Route path="/toolkit/favicon" element={<FaviconGenerator />} />
+        <Route path="/toolkit/icon" element={<IconGenerator />} />
         <Route path="/toolkit/editor" element={<CodeEditor />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

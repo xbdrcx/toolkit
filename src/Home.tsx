@@ -10,9 +10,9 @@ export default function Home() {
             <h1>Welcome to Toolkit</h1>
             <div className="cards">
                 <Card 
-                    title="JSON Formatter" 
+                    title="Code Minifier" 
                     description="Format and beautify your JSON data." 
-                    onClick={() => navigate('/toolkit/json')} // Navigate to JSON Formatter
+                    onClick={() => navigate('/toolkit/minifier')} // Navigate to JSON Formatter
                 />
                 <Card 
                     title="Password Generator" 
@@ -25,9 +25,9 @@ export default function Home() {
                     onClick={() => navigate('/toolkit/color')} // Navigate to Color Picker
                 />
                 <Card 
-                    title="Favicon Generator" 
+                    title="Icon Generator" 
                     description="Create favicons for your website." 
-                    onClick={() => navigate('/toolkit/favicon')} // Navigate to Color Picker
+                    onClick={() => navigate('/toolkit/icon')} // Navigate to Color Picker
                 />
                 <Card 
                     title="Code Editor" 
