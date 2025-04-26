@@ -1,6 +1,7 @@
 // General
 import { useState, useEffect } from 'react';
 import { HuePicker, AlphaPicker } from 'react-color';
+// @ts-ignore
 import ColorThief from 'colorthief';
 import { CSS } from '@dnd-kit/utilities';
 import {
@@ -38,36 +39,15 @@ export default function ColorPicker() {
         setPickedColor(generateRandomColor());
     }, []);
 
+    useEffect(() => {
+        if (pickedColor) {
+            handleAddPreviousColor(pickedColor);
+        }
+    }, [pickedColor]);
+
     // Generate a random color
     const generateRandomColor = () => {
         return '#' + Math.floor(Math.random() * 16777215).toString(16);
-    };
-
-    // Convert color to the selected type
-    const convertColor = (color: string, type: string): string => {
-        const [r, g, b] = color.startsWith('#')
-            ? hexToRgb(color)
-            : color.replace(/[^\d,]/g, '').split(',').map(Number);
-
-        switch (type) {
-            case 'RGB':
-                return `rgb(${r}, ${g}, ${b})`;
-            case 'HEX':
-                return rgbToHex(r, g, b);
-            case 'HSL':
-                return rgbToHsl(r, g, b);
-            default:
-                return color;
-        }
-    };
-
-    // Update all colors when the color type changes
-    const handleColorTypeChange = (type: string) => {
-        setSelectedColorType(type);
-        if (pickedColor) {
-            setPickedColor(convertColor(pickedColor, type));
-        }
-        setColorPalette(colorPalette.map((color) => convertColor(color, type)));
     };
 
     const handlePicker = async () => {
@@ -94,19 +74,22 @@ export default function ColorPicker() {
     const handleHueChange = (color: { hex: string }) => {
         setPickedColor(color.hex);
         console.log(color.hex);
-    }
-
-    const handleAlphaChange = (color: { rgb: { r: number; g: number; b: number; a: number } }) => {
+    };
+    
+    const handleAlphaChange = (color: { rgb: { r: number; g: number; b: number; a?: number } }) => {
         const { r, g, b, a } = color.rgb;
-        const updatedColor = convertColorBetweenTypes(`rgba(${r}, ${g}, ${b}, ${a})`, 'RGB', selectedColorType);
+        const alpha = a !== undefined ? a : 1; // Default alpha to 1 if undefined
+        const updatedColor = convertColorBetweenTypes(`rgba(${r}, ${g}, ${b}, ${alpha})`, 'RGB', selectedColorType);
         setPickedColor(updatedColor);
     };
 
     const handlePreviousColor = () => {
-        // Logic to handle previous color (if needed)
-        // Color gotta be selected for 2 seconds to be saved as previous color
-        console.log("Previous color functionality not implemented yet.");
-    }
+        if (previsousColors.length > 0) {
+            const lastColor = previsousColors[previsousColors.length - 1];
+            setPickedColor(lastColor); // Set the picked color to the last color
+            setPreviousColors(previsousColors.slice(0, -1)); // Remove the last color from the array
+        }
+    };
 
     const addToPalette = () => {
         if (pickedColor && !colorPalette.includes(pickedColor)) {
@@ -146,13 +129,13 @@ export default function ColorPicker() {
         })
     );
 
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: import('@dnd-kit/core').DragEndEvent) => {
         const { active, over } = event;
 
-        if (active.id !== over.id) {
+        if (over && active.id !== over.id) {
             setColorPalette((items) => {
-                const oldIndex = items.indexOf(active.id);
-                const newIndex = items.indexOf(over.id);
+                const oldIndex = items.indexOf(active.id as string);
+                const newIndex = items.indexOf(over.id as string);
                 return arrayMove(items, oldIndex, newIndex);
             });
         }
@@ -188,8 +171,8 @@ export default function ColorPicker() {
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
             let h = 0,
-                s = 0,
-                l = (max + min) / 2;
+                s = 0;
+            const l = (max + min) / 2;
     
             if (max !== min) {
                 const d = max - min;
@@ -259,20 +242,26 @@ export default function ColorPicker() {
         }
     
         if (toType === 'HEX') {
-            return rgbToHex(r, g, b, a);
+            return rgbToHex(r ?? 0, g ?? 0, b ?? 0, a ?? 1);
         } else if (toType === 'RGB') {
             return `rgba(${r}, ${g}, ${b}, ${a})`;
         } else if (toType === 'HSL') {
-            return rgbToHsl(r, g, b, a);
+            return rgbToHsl(r ?? 0, g ?? 0, b ?? 0, a ?? 1);
         }
     
         return color;
     };
 
     const handleAddPreviousColor = (color: string) => {
-        // It should add a color after the user selects one and its selected for 2 seconds
         if (!previsousColors.includes(color)) {
-            setPreviousColors([...previsousColors, color]);
+            setTimeout(() => {
+                setPreviousColors((prevColors) => {
+                    if (!prevColors.includes(color)) {
+                        return [...prevColors, color];
+                    }
+                    return prevColors;
+                });
+            }, 2000); // Add the color after 2 seconds
         }
     };
 
@@ -312,7 +301,7 @@ export default function ColorPicker() {
                                     {colorPalette.length === 0 ? (
                                         <p className='colorpalette__empty'>Palette is empty. Add some colors!</p>
                                     ) : (
-                                        colorPalette.map((color, index) => (
+                                        colorPalette.map((color) => (
                                             <SortableItem
                                                 key={color}
                                                 id={color}
