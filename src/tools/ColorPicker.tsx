@@ -283,12 +283,11 @@ export default function ColorPicker() {
                         <button className="btn" title='Picker' onClick={handlePicker}><TbColorPicker /> Picker</button>    
                         <button className="btn" title='Random' onClick={handleRandomColor}><FaDice /> Random</button>
                         <button className='btn' title="Previous" disabled={previsousColors.length == 0 ? true : false} onClick={handlePreviousColor}><FaBackspace /> Previous</button>
-                        <button className="btn" title="Add to Palette" onClick={addToPalette}><FaPalette /> Add to Palette</button>
                         <button className="btn" title='Upload Image' onClick={() => document.getElementById('file-upload')?.click()}><FaImage  /> Upload Image</button>
                         <input type="file" id="file-upload" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                     </div>
                 </div>
-                <div style={{ width: '20%' }}>
+                <div style={{ width: '50%' }}>
                     <div className='colorpalette'>
                         <h2>Color Palette</h2>
                         <DndContext
@@ -314,6 +313,7 @@ export default function ColorPicker() {
                             </SortableContext>
                         </DndContext>
                         <div className='colorpalette_buttons'>
+                        <button className="btn" title="Add to Palette" onClick={addToPalette}><FaPalette /> Add to Palette</button>
                             <button className="btn" title='Clear Palette' onClick={() => setColorPalette([])}><CgTrashEmpty /> Clear Palette</button>
                         </div>
                     </div>
@@ -361,7 +361,8 @@ function SortableItem({ id, color, onRemove }: { id: string; color: string; onRe
             className='colorpalette__item'
             title={color}
         >
-            <span>{color}</span>
+            {/* <span>{color}</span> */}
+            <CopyInput value={color} />
             <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                     className="colorpalette__drag"
