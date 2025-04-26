@@ -1,6 +1,7 @@
 
 // General
 import { useState, useRef } from 'react';
+import JavaScriptObfuscator from 'javascript-obfuscator';
 
 // MUI Components
 import Tabs from '@mui/material/Tabs';
@@ -49,6 +50,32 @@ export default function CodeMinifier() {
     const toFormatRef = useRef<HTMLTextAreaElement | null>(null);
     const formattedRef = useRef<HTMLTextAreaElement | null>(null);
     
+    const [codeToObfuscate, setCodeToObfuscate] = useState('');
+    const [obfuscatedCode, setObfuscatedCode] = useState('');
+
+    // Function to obfuscate code
+    const obfuscateCode = () => {
+        try {
+            const obfuscated = JavaScriptObfuscator.obfuscate(codeToObfuscate, {
+                compact: true,
+                controlFlowFlattening: true,
+            });
+            setObfuscatedCode(obfuscated.getObfuscatedCode());
+        } catch (error) {
+            setObfuscatedCode('Error obfuscating code');
+            console.error('Obfuscation error:', error);
+        }
+    };
+
+    // Function to copy obfuscated code to clipboard
+    const copyObfuscatedCode = () => {
+        navigator.clipboard.writeText(obfuscatedCode).then(() => {
+            console.log('Copied to clipboard');
+        }).catch((error) => {
+            console.error('Error copying to clipboard:', error);
+        });
+    };
+
     // Function to format JSON
     const formatJSON = () => {
         try {
@@ -124,7 +151,7 @@ export default function CodeMinifier() {
                 <Tabs value={activeTab} onChange={handleTabChange} aria-label="basic tabs example">
                     <Tab label="Minifier" {...a11yProps(0)} />
                     <Tab label="Obfuscator" {...a11yProps(1)} />
-                    <Tab label="Item Three" {...a11yProps(2)} />
+                    <Tab label="Compressor" {...a11yProps(2)} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={activeTab} index={0}>
@@ -157,10 +184,31 @@ export default function CodeMinifier() {
                 </div>
             </CustomTabPanel>
             <CustomTabPanel value={activeTab} index={1}>
-                Item Two
+                <div className='formatter'>
+                    <textarea
+                        className='input'
+                        placeholder='Paste your JavaScript code here...'
+                        rows={25}
+                        cols={50}
+                        value={codeToObfuscate}
+                        onChange={(e) => setCodeToObfuscate(e.target.value)}
+                    ></textarea>
+                    <textarea
+                        className='output'
+                        placeholder='Obfuscated code will appear here...'
+                        rows={25}
+                        cols={50}
+                        value={obfuscatedCode}
+                        readOnly
+                    ></textarea>
+                    <div className='buttons'>
+                        <button className='btn' onClick={obfuscateCode} disabled={!codeToObfuscate.length}><MdFormatAlignLeft /> Obfuscate</button>
+                        <button className='btn' onClick={copyObfuscatedCode} disabled={!obfuscatedCode.length}><MdCopyAll />Copy</button>
+                    </div>
+                </div>
             </CustomTabPanel>
             <CustomTabPanel value={activeTab} index={2}>
-                Item Three
+                Compressor
             </CustomTabPanel>
         </>
     );
