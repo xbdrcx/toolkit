@@ -28,9 +28,10 @@ import { CgTrashEmpty } from "react-icons/cg";
 
 export default function ColorPicker() {
 
-    const [selectedColorType, setSelectedColorType] = useState<string>('RGB');
+    const [selectedColorType, setSelectedColorType] = useState<string>('HEX');
     const [pickedColor, setPickedColor] = useState<string | null>(null);
     const [colorPalette, setColorPalette] = useState<string[]>([]);
+    const [previsousColors, setPreviousColors] = useState<string[]>([]);
 
     // Set a random color on initial render
     useEffect(() => {
@@ -95,10 +96,11 @@ export default function ColorPicker() {
         console.log(color.hex);
     }
 
-    const handleAlphaChange = (color: { hex: string }) => {
-        // setPickedColor(color.hex);
-        // console.log(color.hex);
-    }
+    const handleAlphaChange = (color: { rgb: { r: number; g: number; b: number; a: number } }) => {
+        const { r, g, b, a } = color.rgb;
+        const updatedColor = convertColorBetweenTypes(`rgba(${r}, ${g}, ${b}, ${a})`, 'RGB', selectedColorType);
+        setPickedColor(updatedColor);
+    };
 
     const handlePreviousColor = () => {
         // Logic to handle previous color (if needed)
@@ -156,84 +158,142 @@ export default function ColorPicker() {
         }
     };
 
-    // Helper function to convert HEX to RGB
-    const hexToRgb = (hex: string): [number, number, number] => {
-        const bigint = parseInt(hex.slice(1), 16);
-        const r = (bigint >> 16) & 255;
-        const g = (bigint >> 8) & 255;
-        const b = bigint & 255;
-        return [r, g, b];
-    };
-
-    // Converts RGB to HEX
-    const rgbToHex = (r: number, g: number, b: number): string => {
-        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-    };
-
-    // Converts RGB to HSL
-    const rgbToHsl = (r: number, g: number, b: number): string => {
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h = 0,
-            s = 0,
-            l = (max + min) / 2;
-
-        if (max !== min) {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                    break;
-                case g:
-                    h = (b - r) / d + 2;
-                    break;
-                case b:
-                    h = (r - g) / d + 4;
-                    break;
-            }
-            h /= 6;
+    const handleColorConversion = (toType: string) => {
+        if (pickedColor) {
+            const convertedColor = convertColorBetweenTypes(pickedColor, selectedColorType, toType);
+            setPickedColor(convertedColor);
+            setSelectedColorType(toType);
         }
+    };
 
-        return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+    const convertColorBetweenTypes = (color: string, fromType: string, toType: string): string => {
+        const hexToRgb = (hex: string): [number, number, number, number] => {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            const a = hex.length === 9 ? parseInt(hex.slice(7, 9), 16) / 255 : 1; // Handle alpha
+            return [r, g, b, a];
+        };
+    
+        const rgbToHex = (r: number, g: number, b: number, a: number): string => {
+            const alphaHex = Math.round(a * 255).toString(16).padStart(2, '0');
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}${alphaHex}`;
+        };
+    
+        const rgbToHsl = (r: number, g: number, b: number, a: number): string => {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h = 0,
+                s = 0,
+                l = (max + min) / 2;
+    
+            if (max !== min) {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r:
+                        h = (g - b) / d + (g < b ? 6 : 0);
+                        break;
+                    case g:
+                        h = (b - r) / d + 2;
+                        break;
+                    case b:
+                        h = (r - g) / d + 4;
+                        break;
+                }
+                h /= 6;
+            }
+    
+            return `hsla(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%, ${a})`;
+        };
+    
+        const hslToRgb = (h: number, s: number, l: number, a: number): [number, number, number, number] => {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            let r, g, b;
+    
+            if (s === 0) {
+                r = g = b = l; // achromatic
+            } else {
+                const hue2rgb = (p: number, q: number, t: number) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+    
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+    
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), a];
+        };
+    
+        if (fromType === toType) return color;
+    
+        let r, g, b, a;
+    
+        if (fromType === 'HEX') {
+            [r, g, b, a] = hexToRgb(color);
+        } else if (fromType === 'RGB') {
+            [r, g, b, a] = color
+                .replace(/[^\d,.]/g, '')
+                .split(',')
+                .map(Number);
+        } else if (fromType === 'HSL') {
+            const [h, s, l, alpha] = color
+                .replace(/[^\d,.]/g, '')
+                .split(',')
+                .map(Number);
+            [r, g, b, a] = hslToRgb(h, s, l, alpha);
+        }
+    
+        if (toType === 'HEX') {
+            return rgbToHex(r, g, b, a);
+        } else if (toType === 'RGB') {
+            return `rgba(${r}, ${g}, ${b}, ${a})`;
+        } else if (toType === 'HSL') {
+            return rgbToHsl(r, g, b, a);
+        }
+    
+        return color;
+    };
+
+    const handleAddPreviousColor = (color: string) => {
+        // It should add a color after the user selects one and its selected for 2 seconds
+        if (!previsousColors.includes(color)) {
+            setPreviousColors([...previsousColors, color]);
+        }
     };
 
     return (
         <>
-            <div className='color_types'>
-                <button
-                    className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`}
-                    onClick={() => handleColorTypeChange('RGB')}
-                >
-                    RGB
-                </button>
-                <button
-                    className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`}
-                    onClick={() => handleColorTypeChange('HEX')}
-                >
-                    HEX
-                </button>
-                <button
-                    className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`}
-                    onClick={() => handleColorTypeChange('HSL')}
-                >
-                    HSL
-                </button>
-            </div>
             <div className='colorsection'>
                 <div className='colorpicker' style={{ width: '80%' }}>
-                    <h2>Color Picker</h2>
+                    <div className='color_types'>
+                        <h2>Color Picker</h2>
+                        <button className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HEX')}>HEX</button>
+                        <button className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('RGB')}>RGB</button>
+                        <button className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HSL')}>HSL</button>
+                    </div>
                     <div className="colorpicker_show" style={{ backgroundColor: pickedColor || '' }}></div>
                     <HuePicker width='100%' color={pickedColor || "#000000"} onChange={handleHueChange} />
-                    <AlphaPicker width='100%' onChange={handleAlphaChange} />
+                    <AlphaPicker width='100%' color={pickedColor || "#000000"} onChange={handleAlphaChange} />
                     <CopyInput value={pickedColor || '#000000'} />
                     <div className='colorpicker_buttons'>
                         <button className="btn" title='Picker' onClick={handlePicker}><TbColorPicker /> Picker</button>    
                         <button className="btn" title='Random' onClick={handleRandomColor}><FaDice /> Random</button>
-                        <button className='btn' title="Previous" onClick={handlePreviousColor}><FaBackspace /> Previous</button>
+                        <button className='btn' title="Previous" disabled={previsousColors.length == 0 ? true : false} onClick={handlePreviousColor}><FaBackspace /> Previous</button>
                         <button className="btn" title="Add to Palette" onClick={addToPalette}><FaPalette /> Add to Palette</button>
                         <button className="btn" title='Upload Image' onClick={() => document.getElementById('file-upload')?.click()}><FaImage  /> Upload Image</button>
                         <input type="file" id="file-upload" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />

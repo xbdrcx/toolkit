@@ -96,6 +96,7 @@ nav h1 {
 
 .color_types {
   display: flex;
+  align-items: center;
   gap: 10px;;
 }
 .btn-selected {
@@ -186,9 +187,15 @@ footer {
   text-align: center;
   background-color: #464646;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .copyInput:hover {
   background-color: #e6e6e6;
+}
+.copyInput svg {
+  margin-right: 10px;
 }
 .tooltip {
   position: absolute;

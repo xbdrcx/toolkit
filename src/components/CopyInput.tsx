@@ -1,4 +1,8 @@
+// General
 import { useState } from 'react';
+
+// Icons
+import { MdCopyAll } from "react-icons/md";
 
 export default function CopyInput({ value }: { value: string }) {
     const [showTooltip, setShowTooltip] = useState(false);
@@ -18,6 +22,7 @@ export default function CopyInput({ value }: { value: string }) {
                 className="copyInput"
                 onClick={() => copyToClipboard(value)}
             >
+                <MdCopyAll className="copyIcon" />
                 {value}
             </div>
             {showTooltip && (
