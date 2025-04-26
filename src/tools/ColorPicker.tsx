@@ -84,12 +84,6 @@ export default function ColorPicker() {
         }
     };
 
-    const handleRandomColor = () => {
-        const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        setPickedColor(randomColor);
-        console.log(randomColor);
-    }
-
     const handleHueChange = (color: { hex: string }) => {
         setPickedColor(color.hex);
         console.log(color.hex);
@@ -367,7 +361,7 @@ export default function ColorPicker() {
                                     ></div>
                                     <Slider
                                         value={gradientStops[index]}
-                                        onChange={(e, value) => handleGradientStopChange(index, value as number)}
+                                        onChange={(_, value) => handleGradientStopChange(index, value as number)}
                                         min={0}
                                         max={100}
                                         valueLabelDisplay="auto"
