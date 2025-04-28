@@ -105,29 +105,18 @@ nav h1 {
   border: 2px solid #0056b3;
 }
 
-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
 .bc {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px solid white;
-  padding: 6px;
-  width: 14px;
-  height: 14px;
+  border: 2px solid white;
+  padding: 2px;
   font-weight: bold;
   font-family: 'Arial', Courier, monospace;
   transition: all .2s;
   cursor: pointer;
   text-decoration: none;
   color: white;
-  margin-bottom: 12px;
 }
 .bc:hover {
   text-decoration: none;

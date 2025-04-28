@@ -7,6 +7,7 @@ export default function Home() {
 
     return (
         <>
+            <a href='https://xbdrcx.github.io' target='_blank' className='bc'>BC</a>
             <h1>Welcome to Toolkit</h1>
             <div className="cards">
                 <Card 

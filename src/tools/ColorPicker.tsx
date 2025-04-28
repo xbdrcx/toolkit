@@ -19,9 +19,6 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 
-// MUI
-import Grid from '@mui/material/Grid';
-
 // Components
 import CopyInput from '../components/CopyInput';
 
@@ -389,24 +386,32 @@ export default function ColorPicker() {
                     </div>
                     <div className="colorgradient">
                         <h2>Color Gradient</h2>
-                        <div
-                            className="colorgradient__preview"
-                            style={{
-                                background: `linear-gradient(to right, ${colorPalette
-                                    .map((color) => `${color}`)
-                                    .join(', ')})`,
-                                height: '50px',
-                                borderRadius: '4px',
-                                border: '1px solid #ccc',
-                            }}
-                        ></div>
-                        <div className="colorgradient__output">
-                            <CopyInput
-                                value={`linear-gradient(to right, ${colorPalette
-                                    .map((color) => `${color}`)
-                                    .join(', ')})`}
-                            />
-                        </div>
+                        {colorPalette.length >= 2 ? (
+                            <>
+                                <div
+                                    className="colorgradient__preview"
+                                    style={{
+                                        background: `linear-gradient(to right, ${colorPalette
+                                            .map((color) => `${color}`)
+                                            .join(', ')})`,
+                                        height: '50px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ccc',
+                                    }}
+                                ></div>
+                                <div className="colorgradient__output">
+                                    <CopyInput
+                                        value={`linear-gradient(to right, ${colorPalette
+                                            .map((color) => `${color}`)
+                                            .join(', ')})`}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <p className="colorgradient__empty">
+                                Add 2 or more colors to the palette to create gradient.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

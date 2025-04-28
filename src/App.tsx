@@ -27,6 +27,7 @@ function AppContent() {
       {/* <video className='videobg' src='./toolkit/background_1.mp4' autoPlay muted /> */}
       {location.pathname !== '/toolkit' && ( // Conditionally render the nav
         <nav>
+          <a href='https://xbdrcx.github.io' target='_blank' className='bc'>BC</a>
           <Link to="/toolkit" style={{ color: "white" }}><h1>Hello, Toolkit.</h1></Link>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Link to="/toolkit/minifier">Code Minifier</Link>
@@ -46,9 +47,6 @@ function AppContent() {
         <Route path="/toolkit/editor" element={<CodeEditor />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <footer>
-        <a href='https://xbdrcx.github.io' target='_blank' className='bc'>BC</a>
-      </footer>
     </>
   );
 }
