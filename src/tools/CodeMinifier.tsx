@@ -76,25 +76,23 @@ export default function CodeMinifier() {
         });
     };
 
-    // Function to format JSON
     const formatJSON = () => {
         try {
-            const json = JSON.parse(toFormat);
-            return JSON.stringify(json, null, 4); // 4 spaces for indentation
+            const json = JSON.parse(toFormat); // Parse the input JSON
+            setFormatted(JSON.stringify(json, null, 4)); // Format and update the state
         } catch {
-            return 'Invalid JSON';
+            setFormatted('Invalid JSON'); // Handle invalid JSON
         }
-    }
+    };
 
-    // Function to minify JSON
     const minifyJSON = () => {
         try {
-            const json = JSON.parse(formatted);
-            return JSON.stringify(json); // No spaces for minification
+            const json = JSON.parse(toFormat); // Parse the input JSON
+            setFormatted(JSON.stringify(json)); // Minify and update the state
         } catch {
-            return 'Invalid JSON';
+            setFormatted('Invalid JSON'); // Handle invalid JSON
         }
-    }
+    };
 
     // Function to copy JSON to clipboard
     const copyToClipboard = () => {
@@ -162,23 +160,23 @@ export default function CodeMinifier() {
                         rows={25}
                         cols={50}
                         ref={toFormatRef}
+                        value={toFormat}
                         onChange={(e) => setToFormat(e.target.value)}
                     ></textarea>
                     <textarea
                         className='output'
-                        placeholder='Formatted JSON will appear here...'
+                        placeholder='Formatted or Minified JSON will appear here...'
                         rows={25}
                         cols={50}
-                        ref={formattedRef}
-                        onChange={(e) => setFormatted(e.target.value)}
-                        disabled
+                        value={formatted} // Bind to the `formatted` state
+                        readOnly
                     ></textarea>
                     <div className='buttons'>
                         <button className='btn' onClick={pasteFromClipboard}><MdContentPasteGo />Paste</button>
-                        <button className='btn' onClick={formatJSON} disabled={!toFormatRef.current?.value?.length}><MdFormatAlignLeft /> Format</button>
-                        <button className='btn' onClick={minifyJSON} disabled={!toFormatRef.current?.value?.length}><VscJson />Minify</button>
-                        <button className='btn' onClick={copyToClipboard} disabled={!formattedRef.current?.value?.length}><MdCopyAll />Copy</button>
-                        <button className='btn' onClick={downloadJSON} disabled={!formattedRef.current?.value?.length}><MdDownloading />Download</button>
+                        <button className='btn' onClick={formatJSON} disabled={!toFormat.length}><MdFormatAlignLeft /> Format</button>
+                        <button className='btn' onClick={minifyJSON} disabled={!toFormat.length}><VscJson />Minify</button>
+                        <button className='btn' onClick={copyToClipboard} disabled={!formatted.length}><MdCopyAll />Copy</button>
+                        <button className='btn' onClick={downloadJSON} disabled={!formatted.length}><MdDownloading />Download</button>
                         <button className='btn' onClick={clearTextAreas}><MdClear />Clear</button>
                     </div>
                 </div>

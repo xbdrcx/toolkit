@@ -20,9 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 
 // MUI
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import Slider from '@mui/material/Slider';
 
 // Components
 import CopyInput from '../components/CopyInput';
@@ -38,20 +36,6 @@ export default function ColorPicker() {
     const [pickedColor, setPickedColor] = useState<string | null>(null);
     const [colorPalette, setColorPalette] = useState<string[]>([]);
     const [previsousColors, setPreviousColors] = useState<string[]>([]);
-    const [gradientStops, setGradientStops] = useState<number[]>([]);
-
-    useEffect(() => {
-        // Initialize gradient stops when the palette changes
-        setGradientStops(colorPalette.map((_, index) => (index / (colorPalette.length - 1)) * 100));
-    }, [colorPalette]);
-
-    const handleGradientStopChange = (index: number, value: number) => {
-        setGradientStops((prevStops) => {
-            const newStops = [...prevStops];
-            newStops[index] = value;
-            return newStops;
-        });
-    };
 
     // Set a random color on initial render
     useEffect(() => {
@@ -280,30 +264,83 @@ export default function ColorPicker() {
 
     return (
         <>
-            <Grid container spacing={3}>
-                <Grid>
-                    <div className='colorpicker'>
-                        <div className='color_types'>
-                            <h2>Color Picker</h2>
-                            <button className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HEX')}>HEX</button>
-                            <button className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('RGB')}>RGB</button>
-                            <button className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`} onClick={() => handleColorConversion('HSL')}>HSL</button>
-                        </div>
-                        <div className="colorpicker_show" style={{ backgroundColor: pickedColor || '' }}></div>
-                        <HuePicker width='100%' color={pickedColor || "#000000"} onChange={handleHueChange} />
-                        <AlphaPicker width='100%' color={pickedColor || "#000000"} onChange={handleAlphaChange} />
-                        <CopyInput value={pickedColor || '#000000'} />
-                        <div className='colorpicker_buttons'>
-                            <Button variant="contained" className='btn' onClick={handlePicker}><TbColorPicker /> Picker</Button>
-                            <Button variant='contained' className='btn' onClick={() => setPickedColor(generateRandomColor())}><FaDice /> Random</Button>
-                            <Button variant='contained' className='btn' onClick={handlePreviousColor}><FaBackspace /> Previous</Button>
-                            <Button variant='contained' className='btn' title='Upload Image' onClick={() => document.getElementById('file-upload')?.click()}><FaImage /> Upload Image</Button>
-                            <input type="file" id="file-upload" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
-                        </div>
+            <div className="colorsection">
+                <div className="colorpicker">
+                    <div className="color_types">
+                        <h2>Color Picker</h2>
+                        <button
+                            className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`}
+                            onClick={() => handleColorConversion('HEX')}
+                        >
+                            HEX
+                        </button>
+                        <button
+                            className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`}
+                            onClick={() => handleColorConversion('RGB')}
+                        >
+                            RGB
+                        </button>
+                        <button
+                            className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`}
+                            onClick={() => handleColorConversion('HSL')}
+                        >
+                            HSL
+                        </button>
                     </div>
-                </Grid>
-                <Grid>
-                    <div className='colorpalette'>
+                    <div
+                        className="colorpicker_show"
+                        style={{ backgroundColor: pickedColor || '' }}
+                    ></div>
+                    <HuePicker
+                        width="100%"
+                        color={convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'HEX')}
+                        onChange={(color) => {
+                            const [r, g, b, a] = convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'RGB')
+                                .replace(/[^\d,.]/g, '')
+                                .split(',')
+                                .map(Number); // Extract the current alpha value
+                            const updatedColor = convertColorBetweenTypes(`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${a ?? 1})`, 'RGB', selectedColorType);
+                            setPickedColor(updatedColor);
+                        }}
+                    />
+                    <AlphaPicker
+                        width="100%"
+                        color={convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'HEX')}
+                        onChange={(color) => {
+                            const { r, g, b } = color.rgb;
+                            const updatedColor = convertColorBetweenTypes(`rgba(${r}, ${g}, ${b}, ${color.rgb.a ?? 1})`, 'RGB', selectedColorType);
+                            setPickedColor(updatedColor);
+                        }}
+                    />
+                    <CopyInput value={pickedColor || '#000000'} />
+                    <div className="colorpicker_buttons">
+                        <button className="btn" onClick={handlePicker}>
+                            <TbColorPicker /> Picker
+                        </button>
+                        <button className="btn" onClick={() => setPickedColor(generateRandomColor())}>
+                            <FaDice /> Random
+                        </button>
+                        <button className="btn" onClick={handlePreviousColor}>
+                            <FaBackspace /> Previous
+                        </button>
+                        <button
+                            className="btn"
+                            title="Upload Image"
+                            onClick={() => document.getElementById('file-upload')?.click()}
+                        >
+                            <FaImage /> Upload Image
+                        </button>
+                        <input
+                            type="file"
+                            id="file-upload"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            style={{ display: 'none' }}
+                        />
+                    </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="colorpalette">
                         <h2>Color Palette</h2>
                         <DndContext
                             sensors={sensors}
@@ -311,9 +348,9 @@ export default function ColorPicker() {
                             onDragEnd={handleDragEnd}
                         >
                             <SortableContext items={colorPalette}>
-                                <div className='colorpalette_show'>
+                                <div className="colorpalette_show">
                                     {colorPalette.length === 0 ? (
-                                        <p className='colorpalette__empty'>Palette is empty. Add some colors!</p>
+                                        <p className="colorpalette__empty">Palette is empty. Add some colors!</p>
                                     ) : (
                                         colorPalette.map((color) => (
                                             <SortableItem
@@ -327,62 +364,40 @@ export default function ColorPicker() {
                                 </div>
                             </SortableContext>
                         </DndContext>
-                        <div className='colorpalette_buttons'>
-                            <Button variant='contained' className='btn' onClick={addToPalette}><FaPalette /> Add color</Button>
-                            <Button variant='contained' className='btn' onClick={() => setColorPalette([])}><CgTrashEmpty /> Clear</Button>
+                        <div className="colorpalette_buttons">
+                            <button className="btn" onClick={addToPalette}>
+                                <FaPalette /> Add color
+                            </button>
+                            <button className="btn" onClick={() => setColorPalette([])}>
+                                <CgTrashEmpty /> Clear Palette
+                            </button>
                         </div>
                     </div>
-                </Grid>
-                <Grid>
                     <div className="colorgradient">
                         <h2>Color Gradient</h2>
                         <div
                             className="colorgradient__preview"
                             style={{
                                 background: `linear-gradient(to right, ${colorPalette
-                                    .map((color, index) => `${color} ${gradientStops[index]}%`)
+                                    .map((color) => `${color}`)
                                     .join(', ')})`,
                                 height: '50px',
                                 borderRadius: '4px',
                                 border: '1px solid #ccc',
                             }}
                         ></div>
-                        <div className="colorgradient__sliders">
-                            {colorPalette.map((color, index) => (
-                                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                    <div
-                                        style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            backgroundColor: color,
-                                            borderRadius: '50%',
-                                            border: '1px solid #ccc',
-                                        }}
-                                    ></div>
-                                    <Slider
-                                        value={gradientStops[index]}
-                                        onChange={(_, value) => handleGradientStopChange(index, value as number)}
-                                        min={0}
-                                        max={100}
-                                        valueLabelDisplay="auto"
-                                        sx={{ flex: 1 }}
-                                    />
-                                    <span>{gradientStops[index]}%</span>
-                                </div>
-                            ))}
-                        </div>
                         <div className="colorgradient__output">
                             <CopyInput
                                 value={`linear-gradient(to right, ${colorPalette
-                                    .map((color, index) => `${color} ${gradientStops[index]}%`)
+                                    .map((color) => `${color}`)
                                     .join(', ')})`}
                             />
                         </div>
                     </div>
-                </Grid>
-            </Grid>
+                </div>
+            </div>
         </>
-    )
+    );
 }
 
 function SortableItem({ id, color, onRemove }: { id: string; color: string; onRemove: (color: string) => void }) {
