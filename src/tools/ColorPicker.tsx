@@ -65,18 +65,6 @@ export default function ColorPicker() {
         }
     };
 
-    const handleHueChange = (color: { hex: string }) => {
-        setPickedColor(color.hex);
-        console.log(color.hex);
-    };
-    
-    const handleAlphaChange = (color: { rgb: { r: number; g: number; b: number; a?: number } }) => {
-        const { r, g, b, a } = color.rgb;
-        const alpha = a !== undefined ? a : 1; // Default alpha to 1 if undefined
-        const updatedColor = convertColorBetweenTypes(`rgba(${r}, ${g}, ${b}, ${alpha})`, 'RGB', selectedColorType);
-        setPickedColor(updatedColor);
-    };
-
     const handlePreviousColor = () => {
         if (previsousColors.length > 0) {
             const lastColor = previsousColors[previsousColors.length - 1];
@@ -132,14 +120,6 @@ export default function ColorPicker() {
                 const newIndex = items.indexOf(over.id as string);
                 return arrayMove(items, oldIndex, newIndex);
             });
-        }
-    };
-
-    const handleColorConversion = (toType: string) => {
-        if (pickedColor) {
-            const convertedColor = convertColorBetweenTypes(pickedColor, selectedColorType, toType);
-            setPickedColor(convertedColor);
-            setSelectedColorType(toType);
         }
     };
 
@@ -306,7 +286,7 @@ export default function ColorPicker() {
                         width="100%"
                         color={convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'HEX')}
                         onChange={(color) => {
-                            const [r, g, b, a] = convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'RGB')
+                            const [, , , a] = convertColorBetweenTypes(pickedColor || '#000000', selectedColorType, 'RGB')
                                 .replace(/[^\d,.]/g, '')
                                 .split(',')
                                 .map(Number); // Extract the current alpha value

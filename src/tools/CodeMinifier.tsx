@@ -48,7 +48,7 @@ export default function CodeMinifier() {
     const [toFormat, setToFormat] = useState("")
     const [formatted, setFormatted] = useState("")
     const toFormatRef = useRef<HTMLTextAreaElement | null>(null);
-    const formattedRef = useRef<HTMLTextAreaElement | null>(null);
+    // const formattedRef = useRef<HTMLTextAreaElement | null>(null);
     
     const [codeToObfuscate, setCodeToObfuscate] = useState('');
     const [obfuscatedCode, setObfuscatedCode] = useState('');
