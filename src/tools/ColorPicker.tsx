@@ -146,6 +146,20 @@ export default function ColorPicker() {
         }
     };
 
+    const handleColorTypeChange = (newType: string) => {
+        setSelectedColorType(newType);
+    
+        // Convert all colors in the palette to the new type
+        setColorPalette((prevPalette) =>
+            prevPalette.map((color) => convertColorBetweenTypes(color, selectedColorType, newType))
+        );
+    
+        // Convert the picked color to the new type
+        if (pickedColor) {
+            setPickedColor(convertColorBetweenTypes(pickedColor, selectedColorType, newType));
+        }
+    };
+
     const convertColorBetweenTypes = (color: string, fromType: string, toType: string): string => {
         const hexToRgb = (hex: string): [number, number, number, number] => {
             const bigint = parseInt(hex.slice(1), 16);
@@ -270,19 +284,19 @@ export default function ColorPicker() {
                         <h2>Color Picker</h2>
                         <button
                             className={`btn ${selectedColorType === 'HEX' ? 'btn-selected' : ''}`}
-                            onClick={() => handleColorConversion('HEX')}
+                            onClick={() => handleColorTypeChange('HEX')}
                         >
                             HEX
                         </button>
                         <button
                             className={`btn ${selectedColorType === 'RGB' ? 'btn-selected' : ''}`}
-                            onClick={() => handleColorConversion('RGB')}
+                            onClick={() => handleColorTypeChange('RGB')}
                         >
                             RGB
                         </button>
                         <button
                             className={`btn ${selectedColorType === 'HSL' ? 'btn-selected' : ''}`}
-                            onClick={() => handleColorConversion('HSL')}
+                            onClick={() => handleColorTypeChange('HSL')}
                         >
                             HSL
                         </button>
