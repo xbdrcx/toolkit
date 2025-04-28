@@ -8,7 +8,6 @@ import CodeMinifier from './tools/CodeMinifier'
 import PasswordGenerator from './tools/PasswordGenerator'
 import ColorPicker from './tools/ColorPicker'
 import IconGenerator from './tools/IconGenerator'
-import CodeEditor from './tools/CodeEditor'
 import NotFound from './NotFound'
 
 function App() {
@@ -34,7 +33,6 @@ function AppContent() {
             <Link to="/toolkit/color">Color Picker</Link>
             <Link to="/toolkit/password">Password Generator</Link>
             <Link to="/toolkit/icon">Icon Generator</Link>
-            <Link to="/toolkit/editor">Code Editor</Link>
           </div>
         </nav>
       )}
@@ -44,7 +42,6 @@ function AppContent() {
         <Route path="/toolkit/color" element={<ColorPicker />} />
         <Route path="/toolkit/password" element={<PasswordGenerator />} />
         <Route path="/toolkit/icon" element={<IconGenerator />} />
-        <Route path="/toolkit/editor" element={<CodeEditor />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
